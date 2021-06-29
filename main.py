@@ -7,7 +7,9 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog, QLabel
 
+import read_excel
 from dohody import Ui_MainWindow
+from read_excel import Read
 
 
 class MyWindow(QtWidgets.QMainWindow):
@@ -24,7 +26,7 @@ class MyWindow(QtWidgets.QMainWindow):
 
     def open_file(self):
         self.filename = QFileDialog.getOpenFileName(
-            None, 'Открыть', os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop'), 'All Files(*.xlsx)')
+            None, 'Открыть', os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop'), 'All Files(*.xlsx *.xls)')
         sender = self.sender()
         if str(self.filename) in "('', '')":
             self.ui.statusbar.showMessage('Файл не выбран')
@@ -32,7 +34,8 @@ class MyWindow(QtWidgets.QMainWindow):
             if sender.text() == 'Загрузить таблицу 1':
                 self.ui.status_one.setPixmap(QPixmap("img/good.png"))
                 self.filename_one = self.filename
-                print(self.filename_one[0])
+                read = Read()
+                read.read_excel(self.filename_one[0])
             else:
                 self.ui.status_two.setPixmap(QPixmap("img/good.png"))
                 self.filename_two = self.filename
