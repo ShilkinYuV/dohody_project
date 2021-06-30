@@ -39,7 +39,8 @@ class MyWindow(QtWidgets.QMainWindow):
             else:
                 self.ui.status_two.setPixmap(QPixmap("img/good.png"))
                 self.filename_two = self.filename
-                print(self.filename_two[0])
+                read = Read()
+                read.read_excel(self.filename_two[0])
         #     self.new_thread()
 
 
