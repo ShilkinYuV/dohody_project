@@ -1,11 +1,14 @@
 import openpyxl
+from PyQt5.QtCore import QThread
 from openpyxl import Workbook
 import re
 
 
-class Read:
+class Read(QThread):
 
-    def __init__(self):
+    def __init__(self, my_window, parent=None):
+        super(Read, self).__init__()
+        self.my_window = my_window
         self.filename = ''
         self.total_received_by_account_40101_03100 = ''
         self.refund_of_overpaid_amounts = ''
@@ -37,8 +40,14 @@ class Read:
         self.total_for_section_III_local_budgets = 0
         self.GVF = 0
 
-    def read_excel(self, arg):
-        self.filename = arg
+    def run(self):
+        # self.filename = arg
+        if self.my_window.check_one:
+            self.filename = self.my_window.filename_one[0]
+        else:
+            self.filename = self.my_window.filename_two[0]
+
+        # wb = openpyxl.load_workbook(self.filename)
         wb = openpyxl.load_workbook(self.filename)
         sheet_two = wb.get_sheet_names()[2]
         sheet_one = wb.get_sheet_names()[1]

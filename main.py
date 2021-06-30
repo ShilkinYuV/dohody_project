@@ -22,7 +22,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.open_file_two.clicked.connect(self.open_file)
         self.filename = ''
         self.filename_one = ''
+        self.check_one = False
         self.filename_two = ''
+        self.check_two = False
 
     def open_file(self):
         self.filename = QFileDialog.getOpenFileName(
@@ -34,14 +36,24 @@ class MyWindow(QtWidgets.QMainWindow):
             if sender.text() == 'Загрузить таблицу 1':
                 self.ui.status_one.setPixmap(QPixmap("img/good.png"))
                 self.filename_one = self.filename
-                read = Read()
-                read.read_excel(self.filename_one[0])
+                # read = Read()
+                # read.read_excel(self.filename_one[0])
+                self.check_one = True
+                self.check_two = False
+                self.new_thread()
             else:
                 self.ui.status_two.setPixmap(QPixmap("img/good.png"))
                 self.filename_two = self.filename
-                read = Read()
-                read.read_excel(self.filename_two[0])
+                # read = Read()
+                # read.read_excel(self.filename_two[0])
+                self.check_one = False
+                self.check_two = True
+                self.new_thread()
         #     self.new_thread()
+
+    def new_thread(self):
+        self.my_thread = Read(my_window=self)
+        self.my_thread.start()
 
 
 app = QtWidgets.QApplication([])
