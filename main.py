@@ -1,16 +1,15 @@
-from PyQt5.QtCore import QMetaObject, QSize, QThread, pyqtSignal
 import sys
 import os
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap, QBrush, QColor
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QFileDialog, QLabel, QTableWidgetItem, QHeaderView, QMessageBox
-
-import read_excel
 from dohody import Ui_MainWindow
 from read_excel import Read
 from save import SaveExcel
+from AboutForm import Ui_Dialog
+import images_rc
 
 
 class MyWindow(QtWidgets.QMainWindow):
@@ -18,10 +17,11 @@ class MyWindow(QtWidgets.QMainWindow):
         super(MyWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowIcon(QtGui.QIcon('img/roskazna.png'))
+        self.setWindowIcon(QtGui.QIcon(':/img/roskazna.png'))
         self.ui.open_file_one.clicked.connect(self.open_file)
         self.ui.open_file_two.clicked.connect(self.open_file)
         self.ui.save.clicked.connect(self.save)
+        self.aboutForm = None
         self.filename = ''
         self.filename_one = ''
         self.check_one = False
@@ -64,6 +64,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.table.verticalHeader().setStyleSheet(stylesheet)
         self.ui.table.verticalHeader(
         ).setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.menu.actions()[0].triggered.connect(self.open_about)
         self.ui.save.setEnabled(False)
         self.result_one = {}
         self.result_two = {}
@@ -73,21 +74,21 @@ class MyWindow(QtWidgets.QMainWindow):
     def open_file(self):
         self.filename = QFileDialog.getOpenFileName(
             None, 'Открыть', os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop'),
-            'All Files(*.xlsx *.xls)')
+            'All Files(*.xlsx)')
         sender = self.sender()
         if str(self.filename) in "('', '')":
             self.ui.statusbar.showMessage('Файл не выбран')
         else:
             self.ui.save.setEnabled(False)
             if sender.text() == 'Загрузить таблицу 1':
-                self.ui.status_one.setPixmap(QPixmap("img/good.png"))
+                self.ui.status_one.setPixmap(QPixmap(":/img/good.png"))
                 self.filename_one = self.filename
                 self.check_one = True
                 self.thread_one_ended = False
                 self.check_two = False
                 self.new_thread()
             else:
-                self.ui.status_two.setPixmap(QPixmap("img/good.png"))
+                self.ui.status_two.setPixmap(QPixmap(":/img/good.png"))
                 self.filename_two = self.filename
                 self.check_one = False
                 self.check_two = True
@@ -155,6 +156,20 @@ class MyWindow(QtWidgets.QMainWindow):
             messagebox.setStyleSheet(
                 '.QPushButton{background-color: #444444;color: white;}')
             messagebox.show()
+
+    def open_about(self):
+        if (self.aboutForm != None):
+            self.aboutForm.close()
+        self.aboutForm = AboutWindows()
+        self.aboutForm.show()
+
+
+class AboutWindows(QtWidgets.QDialog):
+
+    def __init__(self):
+        super(AboutWindows, self).__init__()
+        self.ui = Ui_Dialog()
+        self.ui.setupUi(self)
 
 
 app = QtWidgets.QApplication([])
