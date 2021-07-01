@@ -73,7 +73,7 @@ class MyWindow(QtWidgets.QMainWindow):
         schet = 0
         for key, value in self.result.items():
             item = QTableWidgetItem(str(value))
-            item.setForeground(QBrush(QColor(255, 255, 255)))
+            # item.setForeground(QBrush(QColor(255, 255, 255)))
             if self.check_one == True:
                 self.ui.table.setItem(
                     schet, 0, item)

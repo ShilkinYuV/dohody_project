@@ -217,7 +217,7 @@
      <widget class="QTableWidget" name="table">
       <property name="styleSheet">
        <string notr="true">.QTableWidget {background-color: rgba(0, 0, 0, 100);
-border-radius:8px;}</string>
+border-radius:8px; color: white; font: bold;}</string>
       </property>
      </widget>
     </item>

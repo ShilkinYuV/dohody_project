@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.table = QtWidgets.QTableWidget(self.centralwidget)
         self.table.setStyleSheet(".QTableWidget {background-color: rgba(0, 0, 0, 100);\n"
-"border-radius:8px;}")
+"border-radius:8px; color: white; font: bold;}")
         self.table.setObjectName("table")
         self.table.setColumnCount(0)
         self.table.setRowCount(0)
