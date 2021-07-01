@@ -5,7 +5,7 @@ import os
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QBrush, QColor
-from PyQt5.QtWidgets import QFileDialog, QLabel, QTableWidgetItem, QHeaderView
+from PyQt5.QtWidgets import QFileDialog, QLabel, QTableWidgetItem, QHeaderView, QMessageBox
 
 import read_excel
 from dohody import Ui_MainWindow
@@ -64,6 +64,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.table.verticalHeader().setStyleSheet(stylesheet)
         self.ui.table.verticalHeader(
         ).setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.save.setEnabled(False)
         self.result_one = {}
         self.result_two = {}
 
@@ -126,9 +127,32 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.ui.table.setHorizontalHeaderLabels(self.headers_horiz)
                 self.ui.table.resizeColumnsToContents()
 
+        self.ui.save.setEnabled(True)
+
     def save(self):
         saves = SaveExcel()
-        saves.save_excel(self.result_one, self.result_two)
+        wb = saves.save_excel(self.result_one, self.result_two)
+
+        file_save, _ = QFileDialog.getSaveFileName(
+            self, 'Сохранить', 'Поступления на', 'All Files(*.xlsx)')
+        try:
+            if str(file_save) != "":
+                wb.save(file_save)
+                self.ui.statusbar.showMessage('Таблица сохранена')
+        except PermissionError as err:
+            messagebox = QMessageBox(
+                parent=self, text='Ошибка доступа. Необходимо закрыть файл', detailedText=str(err))
+            messagebox.setWindowTitle('Внимание!')
+            messagebox.setStyleSheet(
+                '.QPushButton{background-color: #444444;color: white;}')
+            messagebox.show()
+        except Exception as ex:
+            messagebox = QMessageBox(
+                parent=self, text='Ошибка', detailedText=str(ex))
+            messagebox.setWindowTitle('Внимание!')
+            messagebox.setStyleSheet(
+                '.QPushButton{background-color: #444444;color: white;}')
+            messagebox.show()
 
 
 app = QtWidgets.QApplication([])
