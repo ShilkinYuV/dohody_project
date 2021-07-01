@@ -1,10 +1,11 @@
 import openpyxl
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 from openpyxl import Workbook
 import re
 
 
 class Read(QThread):
+    result = pyqtSignal(dict)
 
     def __init__(self, my_window, parent=None):
         super(Read, self).__init__()
@@ -39,6 +40,7 @@ class Read(QThread):
         self.total_for_section_III_regional_budgets = 0
         self.total_for_section_III_local_budgets = 0
         self.GVF = 0
+        self.result_dict = {}
 
     def run(self):
         # self.filename = arg
@@ -234,6 +236,39 @@ class Read(QThread):
 
         self.GVF = round(self.GVF/1000000, 2)
         print(self.GVF)
+
+        self.result_dict['total_received_by_account_40101_03100'] = self.total_received_by_account_40101_03100
+        self.result_dict['refund_of_overpaid_amounts'] = self.refund_of_overpaid_amounts
+        self.result_dict['total_transferred_to_the_budget'] = self.total_transferred_to_the_budget
+        self.result_dict['consolidated_budget'] = self.consolidated_budget
+        self.result_dict['article_i_federal_budget_including'] = self.article_i_federal_budget_including
+        self.result_dict['vat_on_goods_sold_on_the_territory_of_the_Russian_Federation'] = self.vat_on_goods_sold_on_the_territory_of_the_Russian_Federation
+        self.result_dict['vat_on_goods_imported_into_the_territory_of_the_Russian_Federation'] = self.vat_on_goods_imported_into_the_territory_of_the_Russian_Federation
+        self.result_dict['income_tax'] = self.income_tax
+        self.result_dict['article_II_consolidated_regional_budget'] = self.article_II_consolidated_regional_budget
+        self.result_dict['regional_budgets'] = self.regional_budgets
+        self.result_dict['regional_budgets_NDFL'] = self.regional_budgets_NDFL
+        self.result_dict['regional_budgets_land_tax_from_organizations'] = self.regional_budgets_land_tax_from_organizations
+        self.result_dict['local_budgets'] = self.local_budgets
+        self.result_dict['local_budgets_NDFL'] = self.local_budgets_NDFL
+        self.result_dict['local_budgets_land_tax_from_organizations'] = self.local_budgets_land_tax_from_organizations
+        self.result_dict['local_budgets_comprehensive_income_taxes'] = self.local_budgets_comprehensive_income_taxes
+        self.result_dict['article_III_state_off_budget_funds'] = self.article_III_state_off_budget_funds
+        self.result_dict['pension_fund'] = self.pension_fund
+        self.result_dict['social_insurance_fund'] = self.social_insurance_fund
+        self.result_dict['federal_health_insurance_fund'] = self.federal_health_insurance_fund
+        self.result_dict['territorial_health_insurance_fund'] = self.territorial_health_insurance_fund
+        self.result_dict['article_IY_other_recipients_MOU_FC'] = self.article_IY_other_recipients_MOU_FC
+        self.result_dict['account_balance_40101'] = self.account_balance_40101
+        self.result_dict['NVS_chapter_100'] = self.NVS_chapter_100
+        self.result_dict['total_for_section_III'] = self.total_for_section_III
+        self.result_dict['total_for_section_III_federal_budgets'] = self.total_for_section_III_federal_budgets
+        self.result_dict['total_for_section_III_regional_budgets'] = self.total_for_section_III_regional_budgets
+        self.result_dict['total_for_section_III_local_budgets'] = self.total_for_section_III_local_budgets
+        self.result_dict['GVF'] = self.GVF
+
+        self.result.emit(self.result_dict)
+
 
 
 

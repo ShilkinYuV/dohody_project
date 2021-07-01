@@ -4,8 +4,8 @@ import os
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QFileDialog, QLabel
+from PyQt5.QtGui import QPixmap, QBrush, QColor
+from PyQt5.QtWidgets import QFileDialog, QLabel, QTableWidgetItem, QHeaderView
 
 import read_excel
 from dohody import Ui_MainWindow
@@ -25,10 +25,18 @@ class MyWindow(QtWidgets.QMainWindow):
         self.check_one = False
         self.filename_two = ''
         self.check_two = False
+        self.headers_vert = []
+        self.headers_horiz = []
+        stylesheet = "::section{background-color:rgb(68, 68, 68); color: white;}"
+        self.ui.table.horizontalHeader().setStyleSheet(stylesheet)
+        self.ui.table.verticalHeader().setStyleSheet(stylesheet)
+        self.ui.table.verticalHeader(
+        ).setSectionResizeMode(QHeaderView.Stretch)
 
     def open_file(self):
         self.filename = QFileDialog.getOpenFileName(
-            None, 'Открыть', os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop'), 'All Files(*.xlsx *.xls)')
+            None, 'Открыть', os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop'),
+            'All Files(*.xlsx *.xls)')
         sender = self.sender()
         if str(self.filename) in "('', '')":
             self.ui.statusbar.showMessage('Файл не выбран')
@@ -54,6 +62,60 @@ class MyWindow(QtWidgets.QMainWindow):
     def new_thread(self):
         self.my_thread = Read(my_window=self)
         self.my_thread.start()
+        self.my_thread.result.connect(self.get_result)
+
+    @QtCore.pyqtSlot(dict)
+    def get_result(self, dict):
+        self.result = dict
+        print(dict)
+        self.ui.table.setColumnCount(2)
+        self.ui.table.setRowCount(len(self.result))
+        schet = 0
+        for key, value in self.result.items():
+            item = QTableWidgetItem(str(value))
+            item.setForeground(QBrush(QColor(255, 255, 255)))
+            if self.check_one == True:
+                self.ui.table.setItem(
+                    schet, 0, item)
+            else:
+                self.ui.table.setItem(
+                    schet, 1, item)
+            schet = schet + 1
+        self.headers_vert = ['Всего поступило по сч 40101/03100',
+                             'Возврат  излишне уплаченных сумм',
+                             'Всего перечислено  в бюджет',
+                             'Консолидированный бюджет (ст.I  + ст. II)',
+                             'Статья I. федеральный бюджет, в т.ч:',
+                             'НДС на товары, реализуемые на территории РФ',
+                             'НДС на товары, ввозимые на территории РФ',
+                             'Налог на прибыль',
+                             'Статья II. консолидированный бюджет области',
+                             'в том числе:',
+                             'областной бюджет, в т.ч:',
+                             'НДФЛ',
+                             'Налог на прибыль организаций',
+                             'местные бюджеты, в т.ч:',
+                             'НДФЛ',
+                             'Земельный налог с организаций',
+                             'Налоги на совокупный доход',
+                             'Статья III. государственные внебюджетные фонды',
+                             'в том числе:',
+                             'Пенсионный фонд',
+                             'Фонд социального страхования',
+                             'Федеральный фонд медицинского страхования',
+                             'Территориальный фонд медицинского страхования',
+                             'Статья IY.Иные получатели ( МОУ ФК )',
+                             'Остаток на  счете 40101',
+                             'НВС глава 100',
+                             'Всего по разделу III',
+                             'федеральный бюджет',
+                             'областной бюджет',
+                             'местные бюджеты',
+                             'ГВФ']
+        self.ui.table.setVerticalHeaderLabels(self.headers_vert)
+        self.headers_horiz = ['в 2020 году за соответс-твующий период', 'в 2021 году за соответс-твующий период']
+        self.ui.table.setHorizontalHeaderLabels(self.headers_horiz)
+        self.ui.table.resizeColumnsToContents()
 
 
 app = QtWidgets.QApplication([])
