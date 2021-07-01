@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QFileDialog, QLabel, QTableWidgetItem, QHeaderView
 import read_excel
 from dohody import Ui_MainWindow
 from read_excel import Read
+from save import SaveExcel
 
 
 class MyWindow(QtWidgets.QMainWindow):
@@ -20,18 +21,51 @@ class MyWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon('img/roskazna.png'))
         self.ui.open_file_one.clicked.connect(self.open_file)
         self.ui.open_file_two.clicked.connect(self.open_file)
+        self.ui.save.clicked.connect(self.save)
         self.filename = ''
         self.filename_one = ''
         self.check_one = False
         self.filename_two = ''
         self.check_two = False
-        self.headers_vert = []
+        self.headers_vert = ['Всего поступило по сч 40101/03100',
+                             'Возврат  излишне уплаченных сумм',
+                             'Всего перечислено  в бюджет',
+                             'Консолидированный бюджет (ст.I  + ст. II)',
+                             'Статья I. федеральный бюджет, в т.ч:',
+                             'НДС на товары, реализуемые на территории РФ',
+                             'НДС на товары, ввозимые на территории РФ',
+                             'Налог на прибыль',
+                             'Статья II. консолидированный бюджет области',
+                             'в том числе:',
+                             'областной бюджет, в т.ч:',
+                             'НДФЛ',
+                             'Налог на прибыль организаций',
+                             'местные бюджеты, в т.ч:',
+                             'НДФЛ',
+                             'Земельный налог с организаций',
+                             'Налоги на совокупный доход',
+                             'Статья III. государственные внебюджетные фонды',
+                             'в том числе:',
+                             'Пенсионный фонд',
+                             'Фонд социального страхования',
+                             'Федеральный фонд медицинского страхования',
+                             'Территориальный фонд медицинского страхования',
+                             'Статья IY.Иные получатели ( МОУ ФК )',
+                             'Остаток на  счете 40101',
+                             'НВС глава 100',
+                             'Всего по разделу III',
+                             'федеральный бюджет',
+                             'областной бюджет',
+                             'местные бюджеты',
+                             'ГВФ']
         self.headers_horiz = []
         stylesheet = "::section{background-color:rgb(68, 68, 68); color: white;}"
         self.ui.table.horizontalHeader().setStyleSheet(stylesheet)
         self.ui.table.verticalHeader().setStyleSheet(stylesheet)
         self.ui.table.verticalHeader(
         ).setSectionResizeMode(QHeaderView.Stretch)
+        self.result_one = {}
+        self.result_two = {}
 
     def open_file(self):
         self.filename = QFileDialog.getOpenFileName(
@@ -66,56 +100,35 @@ class MyWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot(dict)
     def get_result(self, dict):
-        self.result = dict
-        print(dict)
         self.ui.table.setColumnCount(2)
-        self.ui.table.setRowCount(len(self.result))
-        schet = 0
-        for key, value in self.result.items():
-            item = QTableWidgetItem(str(value))
-            # item.setForeground(QBrush(QColor(255, 255, 255)))
-            if self.check_one:
-                self.ui.table.setItem(
-                    schet, 0, item)
-            else:
-                self.ui.table.setItem(
-                    schet, 1, item)
-            schet = schet + 1
-        self.headers_vert = ['Всего поступило по сч 40101/03100',
-                             'Возврат  излишне уплаченных сумм',
-                             'Всего перечислено  в бюджет',
-                             'Консолидированный бюджет (ст.I  + ст. II)',
-                             'Статья I. федеральный бюджет, в т.ч:',
-                             'НДС на товары, реализуемые на территории РФ',
-                             'НДС на товары, ввозимые на территории РФ',
-                             'Налог на прибыль',
-                             'Статья II. консолидированный бюджет области',
-                             'в том числе:',
-                             'областной бюджет, в т.ч:',
-                             'НДФЛ',
-                             'Налог на прибыль организаций',
-                             'местные бюджеты, в т.ч:',
-                             'НДФЛ',
-                             'Земельный налог с организаций',
-                             'Налоги на совокупный доход',
-                             'Статья III. государственные внебюджетные фонды',
-                             'в том числе:',
-                             'Пенсионный фонд',
-                             'Фонд социального страхования',
-                             'Федеральный фонд медицинского страхования',
-                             'Территориальный фонд медицинского страхования',
-                             'Статья IY.Иные получатели ( МОУ ФК )',
-                             'Остаток на  счете 40101',
-                             'НВС глава 100',
-                             'Всего по разделу III',
-                             'федеральный бюджет',
-                             'областной бюджет',
-                             'местные бюджеты',
-                             'ГВФ']
+        self.ui.table.setRowCount(len(dict))
         self.ui.table.setVerticalHeaderLabels(self.headers_vert)
-        self.headers_horiz = ['в 2020 году за соответс-твующий период', 'в 2021 году за соответс-твующий период']
-        self.ui.table.setHorizontalHeaderLabels(self.headers_horiz)
-        self.ui.table.resizeColumnsToContents()
+        if self.check_one:
+            self.result_one = dict
+            schet = 0
+            for key, value in self.result_one.items():
+                self.ui.table.setItem(
+                    schet, 0, QTableWidgetItem(str(value)))
+                schet = schet + 1
+                self.headers_horiz = ['в 2020 году за соответс-твующий период',
+                                      'в 2021 году за соответс-твующий период']
+                self.ui.table.setHorizontalHeaderLabels(self.headers_horiz)
+                self.ui.table.resizeColumnsToContents()
+        else:
+            self.result_two = dict
+            schet = 0
+            for key, value in self.result_two.items():
+                self.ui.table.setItem(
+                    schet, 1, QTableWidgetItem(str(value)))
+                schet = schet + 1
+                self.headers_horiz = ['в 2020 году за соответс-твующий период',
+                                      'в 2021 году за соответс-твующий период']
+                self.ui.table.setHorizontalHeaderLabels(self.headers_horiz)
+                self.ui.table.resizeColumnsToContents()
+
+    def save(self):
+        saves = SaveExcel()
+        saves.save_excel(self.result_one, self.result_two)
 
 
 app = QtWidgets.QApplication([])
