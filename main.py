@@ -67,6 +67,8 @@ class MyWindow(QtWidgets.QMainWindow):
         self.ui.save.setEnabled(False)
         self.result_one = {}
         self.result_two = {}
+        self.thread_one_ended = False
+        self.thread_two_ended = False
 
     def open_file(self):
         self.filename = QFileDialog.getOpenFileName(
@@ -76,21 +78,20 @@ class MyWindow(QtWidgets.QMainWindow):
         if str(self.filename) in "('', '')":
             self.ui.statusbar.showMessage('Файл не выбран')
         else:
+            self.ui.save.setEnabled(False)
             if sender.text() == 'Загрузить таблицу 1':
                 self.ui.status_one.setPixmap(QPixmap("img/good.png"))
                 self.filename_one = self.filename
-                # read = Read()
-                # read.read_excel(self.filename_one[0])
                 self.check_one = True
+                self.thread_one_ended = False
                 self.check_two = False
                 self.new_thread()
             else:
                 self.ui.status_two.setPixmap(QPixmap("img/good.png"))
                 self.filename_two = self.filename
-                # read = Read()
-                # read.read_excel(self.filename_two[0])
                 self.check_one = False
                 self.check_two = True
+                self.thread_two_ended = False
                 self.new_thread()
         #     self.new_thread()
 
@@ -127,7 +128,8 @@ class MyWindow(QtWidgets.QMainWindow):
                 self.ui.table.setHorizontalHeaderLabels(self.headers_horiz)
                 self.ui.table.resizeColumnsToContents()
 
-        self.ui.save.setEnabled(True)
+        if self.thread_one_ended and self.thread_two_ended:
+            self.ui.save.setEnabled(True)
 
     def save(self):
         saves = SaveExcel()

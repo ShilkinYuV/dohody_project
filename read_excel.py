@@ -41,6 +41,8 @@ class Read(QThread):
         self.total_for_section_III_local_budgets = 0
         self.GVF = 0
         self.result_dict = {}
+        self.thread_one_ended = False
+        self.thread_two_ended = False
 
     def run(self):
         # self.filename = arg
@@ -212,6 +214,15 @@ class Read(QThread):
         self.result_dict['GVF'] = self.GVF
 
         self.result.emit(self.result_dict)
+
+        if self.my_window.check_one:
+            self.my_window.thread_one_ended = True
+        else:
+            self.my_window.thread_two_ended = True
+
+
+
+
 
 
 
