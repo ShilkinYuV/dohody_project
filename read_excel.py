@@ -144,6 +144,11 @@ class Read(QThread):
             if result_2:
                 self.NVS_chapter_100 = self.NVS_chapter_100 + float(this_sheet['F' + str(i)].value)
 
+            result_3 = re.match(r'10101', str(cell.value))
+            if result_3:
+                self.income_tax = self.income_tax + float(
+                    this_sheet['F' + str(i)].value)
+
             if this_sheet['C' + str(i)].value == 'Всего по разделу III':
                 self.total_for_section_III = float(this_sheet['D' + str(i)].value)
                 self.total_for_section_III_federal_budgets = float(this_sheet['F' + str(i)].value)
